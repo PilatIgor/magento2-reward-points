@@ -3,10 +3,17 @@
 namespace Piltec\RewardPoints\Block\Adminhtml\Customer\Edit\Tab;
 
 use Magento\Backend\Block\Template\Context;
+use Magento\Checkout\Exception;
 use Magento\Framework\Registry;
+use Magento\Customer\Model\Customer;
 
 class Reward extends \Magento\Backend\Block\Template implements \Magento\Ui\Component\Layout\Tabs\TabInterface
 {
+    /**
+     * @var Customer
+     */
+    protected $customer;
+
     /**
      * @var string
      */
@@ -20,10 +27,22 @@ class Reward extends \Magento\Backend\Block\Template implements \Magento\Ui\Comp
     public function __construct(
         Context $context,
         Registry $registry,
+        Customer $customer,
         array $data = []
     ) {
+        $this->customer = $customer;
         $this->_coreRegistry = $registry;
         parent::__construct($context, $data);
+    }
+
+    /**
+     * Get current point amount for user by id
+     *
+     * @return int
+     */
+    public function getCurrentPointAmount(): int
+    {
+        return $this->customer->load($this->getCustomerId())->getData('reward_points_amount');
     }
 
     /**
