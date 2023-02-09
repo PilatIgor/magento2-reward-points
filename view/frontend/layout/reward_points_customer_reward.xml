@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="customer_account"/>
+    <body>
+        <referenceBlock name="page.main.title">
+            <action method="setPageTitle">
+                <argument translate="true" name="title" xsi:type="string">Reward Points</argument>
+            </action>
+        </referenceBlock>
+        <referenceContainer name="content">
+            <block class="Piltec\RewardPoints\Block\Account\Customer\Tab\Reward"
+                   name="custom_tab_sk"
+                   template="Piltec_RewardPoints::tab/reward_points.phtml"
+                   cacheable="false" />
+        </referenceContainer>
+    </body>
+</page>
