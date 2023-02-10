@@ -3,12 +3,18 @@
 namespace Piltec\RewardPoints\Block\Adminhtml\Customer\Edit\Tab;
 
 use Magento\Backend\Block\Template\Context;
-use Magento\Checkout\Exception;
-use Magento\Framework\Registry;
 use Magento\Customer\Model\Customer;
+use Magento\Backend\Block\Template;
+use Magento\Ui\Component\Layout\Tabs\TabInterface;
+use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerFactory;
 
-class Reward extends \Magento\Backend\Block\Template implements \Magento\Ui\Component\Layout\Tabs\TabInterface
+class Reward extends Template implements TabInterface
 {
+    /**
+     * @var CustomerFactory
+     */
+    protected $customerFactory;
+
     /**
      * @var Customer
      */
@@ -21,17 +27,17 @@ class Reward extends \Magento\Backend\Block\Template implements \Magento\Ui\Comp
 
     /**
      * @param Context $context
-     * @param Registry $registry
+     * @param CustomerFactory $customerFactory
      * @param array $data
      */
     public function __construct(
         Context $context,
-        Registry $registry,
         Customer $customer,
+        CustomerFactory $customerFactory,
         array $data = []
     ) {
+        $this->customerFactory = $customerFactory;
         $this->customer = $customer;
-        $this->_coreRegistry = $registry;
         parent::__construct($context, $data);
     }
 
@@ -42,15 +48,18 @@ class Reward extends \Magento\Backend\Block\Template implements \Magento\Ui\Comp
      */
     public function getCurrentPointAmount(): int
     {
-        return $this->customer->load($this->getCustomerId())->getData('reward_points_amount');
+        $customerCollection = $this->customerFactory->create()
+            ->addFieldToFilter('entity_id', $this->getCustomerId());
+        $currentPointAmount = $customerCollection->getData();
+        return $currentPointAmount[0]['reward_points_amount'];
     }
 
     /**
-     * @return string|null
+     * @return int
      */
-    public function getCustomerId()
+    public function getCustomerId(): int
     {
-        return $this->_coreRegistry->registry(\Magento\Customer\Controller\RegistryConstants::CURRENT_CUSTOMER_ID);
+        return $this->getRequest()->getParam('id');
     }
 
     /**
