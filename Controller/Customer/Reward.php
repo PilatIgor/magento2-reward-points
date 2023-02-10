@@ -5,7 +5,7 @@ namespace Piltec\RewardPoints\Controller\Customer;
 use Magento\Framework\View\Result\PageFactory;
 
 /**
- * Class Reward render RW account tab
+ * Class Reward render RP account tab
  */
 class Reward implements \Magento\Framework\App\ActionInterface
 {
