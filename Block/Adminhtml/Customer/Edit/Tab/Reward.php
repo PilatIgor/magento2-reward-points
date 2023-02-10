@@ -2,18 +2,19 @@
 
 namespace Piltec\RewardPoints\Block\Adminhtml\Customer\Edit\Tab;
 
+use Exception;
 use Magento\Backend\Block\Template\Context;
 use Magento\Customer\Model\Customer;
 use Magento\Backend\Block\Template;
 use Magento\Ui\Component\Layout\Tabs\TabInterface;
-use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerFactory;
+use Piltec\RewardPoints\Model\RewardPoints\PointAmount;
 
 class Reward extends Template implements TabInterface
 {
     /**
-     * @var CustomerFactory
+     * @var PointAmount
      */
-    protected $customerFactory;
+    protected $pointAmount;
 
     /**
      * @var Customer
@@ -27,31 +28,28 @@ class Reward extends Template implements TabInterface
 
     /**
      * @param Context $context
-     * @param CustomerFactory $customerFactory
+     * @param PointAmount $pointAmount
      * @param array $data
      */
     public function __construct(
         Context $context,
         Customer $customer,
-        CustomerFactory $customerFactory,
+        PointAmount $pointAmount,
         array $data = []
     ) {
-        $this->customerFactory = $customerFactory;
+        $this->pointAmount = $pointAmount;
         $this->customer = $customer;
         parent::__construct($context, $data);
     }
 
+
     /**
-     * Get current point amount for user by id
-     *
      * @return int
+     * @throws Exception
      */
     public function getCurrentPointAmount(): int
     {
-        $customerCollection = $this->customerFactory->create()
-            ->addFieldToFilter('entity_id', $this->getCustomerId());
-        $currentPointAmount = $customerCollection->getData();
-        return $currentPointAmount[0]['reward_points_amount'];
+        return $this->pointAmount->getCurrentPointAmount($this->getCustomerId());
     }
 
     /**
