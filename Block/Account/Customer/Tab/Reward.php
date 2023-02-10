@@ -2,18 +2,19 @@
 
 namespace Piltec\RewardPoints\Block\Account\Customer\Tab;
 
+use Exception;
 use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\SessionFactory;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerFactory;
+use Piltec\RewardPoints\Model\RewardPoints\PointAmount;
 
 class Reward extends Template
 {
     /**
-     * @var CustomerFactory
+     * @var PointAmount
      */
-    protected $customerRepository;
+    protected $pointAmount;
 
     /**
      * @var SessionFactory
@@ -29,7 +30,7 @@ class Reward extends Template
      * @param Context $context
      * @param SessionFactory $customerSession
      * @param Customer $customer
-     * @param CustomerFactory $customerRepository
+     * @param PointAmount $pointAmount
      * @param array $data
      */
     public function __construct
@@ -37,11 +38,11 @@ class Reward extends Template
         Context $context,
         SessionFactory $customerSession,
         Customer $customer,
-        CustomerFactory $customerRepository,
+        PointAmount $pointAmount,
         array $data = []
     )
     {
-        $this->customerRepository = $customerRepository;
+        $this->pointAmount = $pointAmount;
         $this->customerSession = $customerSession;
         $this->customer = $customer;
         parent::__construct($context, $data);
@@ -51,17 +52,13 @@ class Reward extends Template
      * Get current point amount for customer by session
      *
      * @return int
+     * @throws Exception
      */
     public function getCurrentPointAmount(): int
     {
         $customerId =  $this->customerSession->create()
             ->getCustomer()
             ->getId();
-
-        $customerCollection = $this->customerRepository->create()
-            ->addFieldToFilter('entity_id', $customerId);
-
-        $currentPointAmount = $customerCollection->getData();
-        return $currentPointAmount[0]['reward_points_amount'];
+        return $this->pointAmount->getCurrentPointAmount($customerId);
     }
 }
